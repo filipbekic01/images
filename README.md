@@ -3,7 +3,7 @@
 ## Specifications
 
 - Go 1.15.2 
-- VueJS 2.16 (latest)
+- VueJS 2.16
 - Bootstrap 4.5
 
 

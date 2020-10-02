@@ -1,7 +1,6 @@
-# Images
-
 ## Specifications
 
+- Linux
 - Go 1.15.2 / Iris Go framework
 - VueJS 2.16
 - Bootstrap 4.5
@@ -14,3 +13,6 @@ Project does not require any kind of database. It uses in-memory arrays to preve
 - Open browser and go to `http://localhost:5050` address 
 
 Project uses lorem.picsum service as images connaction.
+
+## Preview
+![images preview](https://i.imgur.com/AE5wIT7.png)

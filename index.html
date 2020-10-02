@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<head>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <!-- Bootstrap with jQuery requirements -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+
+    <!-- Axios -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+        integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+        crossorigin="anonymous"></script>
+
+    <!-- VueJS -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <h1 class="mt-5">Segmed Project</h1>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col col-12">
+                    <p><b>Random Image</b></p>
+                </div>
+                <div class="col col-auto">
+                    <div class="card">
+                        <img :src="images.random.url" class="card-img-top">
+                    </div>
+                </div>
+                <div class="col">
+                    <p>I use <i>picsum.photos</i> service to generate random images. Images are saved in-memory array
+                        because i wanted application to workout of box, without setting up a database. Custom structs
+                        are easy to persist in database using ORM if required.
+                    </p>
+
+                    <p>Once application is restarted in console, data will be lost. That's expected behaviour.</p>
+
+                    <p>Happy surfing!</p>
+
+                    <button @click="saveImage" class="btn btn-success">Save Image</button>
+                    <button @click="getRandomImage" class="btn btn-outline-primary">Next Random</button>
+
+                    <div v-if="error" class="mt-3 alert alert-danger">{{ error }}</div>
+                    <div v-if="success" class="mt-3 alert alert-success">{{ success }}</div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row">
+                <div class="col col-12">
+                    <p><b>Saved Images</b></p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div v-for="image in images.saved" class="col col-2 mb-3">
+                    <img style="width:100% " :src="image.url" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                isLoading: false,
+                error: null,
+                success: null,
+                images: {
+                    random: {},
+                    saved: []
+                }
+            },
+            methods: {
+                async getRandomImage() {
+                    let response = await axios.get("https://picsum.photos/300/300")
+                    let url = response.request.responseURL
+
+                    this.error = null;
+                    this.success = null;
+                    this.images.random = {
+                        url
+                    }
+                },
+                async getSavedImages() {
+                    let response = await axios.get("/images")
+                    this.images.saved = response.data
+                },
+                async saveImage() {
+                    if (this.isLoading) {
+                        return
+                    }
+
+                    this.isLoading = true
+
+                    try {
+                        let response = await axios.post("/images", this.images.random)
+                        await this.getSavedImages()
+                        this.error = null
+                        this.success = "Successfully saved an image!"
+                    } catch (error) {
+                        this.success = null
+                        this.error = error.response.data
+                    } finally {
+                        this.isLoading = false
+                    }
+                }
+            },
+            async created() {
+                await this.getRandomImage()
+                await this.getSavedImages()
+            }
+        })
+    </script>
+</body>
+
+</html>

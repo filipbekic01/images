@@ -2,10 +2,9 @@
 
 ## Specifications
 
-- Go 1.15.2 
+- Go 1.15.2 / Iris Go framework
 - VueJS 2.16
 - Bootstrap 4.5
-
 
 ## Installation
 
